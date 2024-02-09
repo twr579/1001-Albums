@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace _1001Albums.Models
 {
@@ -6,6 +7,9 @@ namespace _1001Albums.Models
     {
         Rock,
         Pop,
-        Jazz
+        Jazz,
+        Funk,
+        [Display(Name = "R&B")]
+        RhythmAndBlues,
     }
 }
