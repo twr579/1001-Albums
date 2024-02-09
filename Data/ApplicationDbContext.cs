@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using _1001Albums.Models;
 
 namespace _1001Albums.Data
 {
@@ -9,5 +10,6 @@ namespace _1001Albums.Data
             : base(options)
         {
         }
+        public DbSet<_1001Albums.Models.Album> Album { get; set; } = default!;
     }
 }
