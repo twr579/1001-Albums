@@ -9,6 +9,7 @@ using _1001Albums.Data;
 using _1001Albums.Models;
 using _1001Albums.Services.Abstract;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 
 namespace _1001Albums.Controllers
 {
@@ -32,6 +33,7 @@ namespace _1001Albums.Controllers
         }
 
         // GET: Albums/Create
+        [Authorize(Policy = "RequireAdministratorRole")]
         public IActionResult Create()
         {
             return View();
@@ -42,6 +44,7 @@ namespace _1001Albums.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> Create(Album album)
         {
             IFormFile? file = album.File;
@@ -60,6 +63,7 @@ namespace _1001Albums.Controllers
         }
 
         // GET: Albums/Edit/5
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,6 +84,7 @@ namespace _1001Albums.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> Edit(int id, Album album)
         {
             if (id != album.Id)
@@ -111,6 +116,7 @@ namespace _1001Albums.Controllers
         }
 
         // GET: Albums/Delete/5
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -131,6 +137,7 @@ namespace _1001Albums.Controllers
         // POST: Albums/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var album = await _context.Album.FindAsync(id);

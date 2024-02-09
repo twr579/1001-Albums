@@ -12,7 +12,7 @@ using _1001Albums.Data;
 namespace _1001Albums.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240209170939_1001Albums")]
+    [Migration("20240209185548_1001Albums")]
     partial class _1001Albums
     {
         /// <inheritdoc />

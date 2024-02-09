@@ -1,6 +1,8 @@
 ﻿@model IEnumerable<_1001Albums.Models.Album>
 @using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 @{
     ViewData["Title"] = "Index";
@@ -10,9 +12,12 @@
 
 <h1>Index</h1>
 
+@if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdministratorRole")).Succeeded)
+{   
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -64,10 +69,13 @@
             <td>
                 <img src="@(Url.Content("https://" + accountName + ".blob.core.windows.net/" + imageContainer + "/" + item.ImagePath))" />
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+                @if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdministratorRole")).Succeeded)
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                }
         </tr>
 }
     </tbody>
