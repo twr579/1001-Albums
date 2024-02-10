@@ -79,6 +79,7 @@ namespace _1001Albums.Controllers
             {
                 return NotFound();
             }
+
             return View(album);
         }
 
@@ -95,10 +96,22 @@ namespace _1001Albums.Controllers
                 return NotFound();
             }
 
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    album.ImagePath = _context.Album.AsNoTracking().Where(a => a.Id == id).FirstOrDefault()?.ImagePath;
+                    IFormFile? file = album.File;
+                    if (file != null && _imageService.IsImage(file) && file.FileName != album.ImagePath)
+                    {
+                        await _imageService.DeleteFileFromStorage(album.ImagePath, _storageConfig);
+                        using (Stream stream = file.OpenReadStream())
+                        {
+                            album.ImagePath = await _imageService.UploadFileToStorage(stream, file.FileName, _storageConfig);
+                        }
+
+                    } 
                     _context.Update(album);
                     await _context.SaveChangesAsync();
                 }
