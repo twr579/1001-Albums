@@ -24,6 +24,8 @@ namespace _1001Albums.Models
         [Range(1, 10)]
         public required int Rating { get; set; }
 
+        public ICollection<UserRating> UserRatings { get; } = new List<UserRating>();
+
         [DisplayName("Cover")]
         public string? ImagePath { get; set; }
 

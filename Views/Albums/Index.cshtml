@@ -30,10 +30,15 @@
                 <p class="card-text">Released: @(item.ReleaseDate.ToShortDateString())</p>
                 <p class="card-text">Genre: @(item.Genre)</p>
                 <p class="card-text">My Rating: @(item.Rating)/10</p>
+                <p class="card-text">Average Rating: @(item.UserRatings.Select(r => r.Rating).DefaultIfEmpty().Average())/10 (@item.UserRatings.Count())</p>
                 @if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdministratorRole")).Succeeded)
                 {
                     <a asp-action="Edit" class="card-link" asp-route-id="@item.Id">Edit</a>
                     <a asp-action="Delete" class="card-link" asp-route-id="@item.Id">Delete</a>
+                }
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-action="Rate" class="card-link" asp-route-id="@item.Id">Rate</a>
                 }
             </div>
     </div>

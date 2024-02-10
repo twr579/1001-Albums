@@ -10,6 +10,7 @@ using _1001Albums.Models;
 using _1001Albums.Services.Abstract;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace _1001Albums.Controllers
 {
@@ -29,7 +30,9 @@ namespace _1001Albums.Controllers
         // GET: Albums
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Album.ToListAsync());
+            var applicationDbContext = _context.Album.Include(u => u.UserRatings);
+
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Albums/Create
@@ -151,9 +154,78 @@ namespace _1001Albums.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Albums/Rate/5
+        [Authorize]
+        public async Task<IActionResult> Rate(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRating = await _context.UserRating.FindAsync(id, userId);
+            if (userRating == null)
+            {
+                userRating = new UserRating { AlbumId = (int)id, UserId = userId, Rating = 0 };
+            }
+            return View(userRating);
+        }
+
+        // POST: Albums/Rate/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Rate(int id, UserRating userRating)
+        {
+            if (id != userRating.AlbumId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if(userRating.Rating != 0)
+                    {
+                        _context.Update(userRating);
+                    } else
+                    {
+                        _context.UserRating.Remove(userRating);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserRatingExists(userRating.UserId, userRating.AlbumId))
+                    {
+                        if (userRating.Rating != 0)
+                        {
+                            _context.Add(userRating);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(userRating);
+        }
+
         private bool AlbumExists(int id)
         {
             return _context.Album.Any(e => e.Id == id);
+        }
+
+        private bool UserRatingExists(string userId, int albumId)
+        {
+            return _context.UserRating.Any(e => e.UserId == userId && e.AlbumId == albumId);
         }
     }
 }

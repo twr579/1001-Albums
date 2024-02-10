@@ -12,8 +12,8 @@ using _1001Albums.Data;
 namespace _1001Albums.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240209185548_1001Albums")]
-    partial class _1001Albums
+    [Migration("20240210182831_Initialize")]
+    partial class Initialize
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -263,6 +263,24 @@ namespace _1001Albums.Data.Migrations
                     b.ToTable("Album");
                 });
 
+            modelBuilder.Entity("_1001Albums.Models.UserRating", b =>
+                {
+                    b.Property<int>("AlbumId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("AlbumId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRating");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -312,6 +330,30 @@ namespace _1001Albums.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("_1001Albums.Models.UserRating", b =>
+                {
+                    b.HasOne("_1001Albums.Models.Album", "Album")
+                        .WithMany("UserRatings")
+                        .HasForeignKey("AlbumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Album");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("_1001Albums.Models.Album", b =>
+                {
+                    b.Navigation("UserRatings");
                 });
 #pragma warning restore 612, 618
         }
