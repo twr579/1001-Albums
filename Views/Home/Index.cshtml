@@ -2,6 +2,14 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+<div class="container text-center overflow-hidden">
     <h1 class="display-4">1001 Albums Tim Must Hear Before He Dies</h1>
+    <img src="~/images/tim.jpeg" class="img-thumbnail float-start" />
+    <p>
+        Hey, I'm Tim! About a year ago I embarked on a quest to listen to every album in Robert Dimery's book <i>1001 Albums You Must Hear Before You Die</i>.
+        Since then, I've been listening to an album a day... well, almost. I've missed a few days, but it's basically become a habit at this point. I've discovered 
+        a lot of new music and wanted to create this website to share my thoughts and opinions, and to get yours as well! Check out the list of albums, and if you're interested, 
+        create an account to add ratings and comments. Enjoy!
+    </p>
+    <a asp-action="Index" asp-controller="Albums" class="btn btn-lg btn-outline-secondary"><i class="bi-disc-fill"></i> Albums</a>
 </div>
