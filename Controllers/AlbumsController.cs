@@ -35,6 +35,25 @@ namespace _1001Albums.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        // GET: Albums/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var album = await _context.Album
+                .Include(u => u.UserRatings)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (album == null)
+            {
+                return NotFound();
+            }
+
+            return View(album);
+        }
+
         // GET: Albums/Create
         [Authorize(Policy = "RequireAdministratorRole")]
         public IActionResult Create()

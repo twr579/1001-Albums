@@ -1,0 +1,49 @@
+﻿@model _1001Albums.Models.Album
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+
+@{
+    ViewData["Title"] = Model.Title;
+    var accountName = Configuration.GetSection("AzureStorageConfig")["AccountName"];
+    var imageContainer = Configuration.GetSection("AzureStorageConfig")["ImageContainer"];
+}
+
+<div>
+    <h4>@(Model.Artist) - @(Model.Title)</h4>
+    <h6 class="text-muted">@(Model.CreatedAt)</h6>
+    <hr />
+    <div class="container-fluid">
+        <div class="row row-cols-2">
+            <img src="@(Url.Content("https://" + accountName + ".blob.core.windows.net/" + imageContainer + "/" + Model.ImagePath))" />
+            <div class="card justify-content-center">
+                <div class="card-body">
+                    <p><i class="bi-calendar2-date"></i> Released: @(Model.ReleaseDate.ToShortDateString())</p>
+                    <p><i class="bi-music-note-beamed"></i> Genre: @(Model.Genre)</p>
+                    <p><img src="~/images/tim.svg" class="filter-black" /> My Rating: @(Model.Rating)/10</p>
+                    <p><i class="bi-people"></i> Average Rating: @Convert.ToInt32(Model.UserRatings.Select(r => r.Rating).DefaultIfEmpty().Average())/10 (@Model.UserRatings.Count())</p>
+                </div>
+            </div>
+        </div>
+    </div>  
+    <hr />
+    <div>
+        @if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdministratorRole")).Succeeded)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+            <span> | </span>
+            <a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+            <span> | </span>
+        }
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a asp-action="Rate" asp-route-id="@Model.Id">Rate</a>
+        }
+        else
+        {
+            <a asp-area="Identity" asp-page="/Account/Login">Login to Leave a Rating</a>
+        }
+        | <a asp-action="Index">Back to List</a>
+    </div>
+</div>

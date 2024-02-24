@@ -20,27 +20,36 @@
 }
 
 <div class="container-fluid">
-    @foreach (var item in Model.Reverse())
-    {   
-        <div class="card w-50 p-2 mx-auto my-4">
-            <img class="card-img-top" src="@(Url.Content("https://" + accountName + ".blob.core.windows.net/" + imageContainer + "/" + item.ImagePath))" />
-            <div class="card-body">
-                <h5 class="card-title">@(item.Artist) - @(item.Title)</h5>
-                <h6 class="card-subtitle mb-2 text-muted">@(item.CreatedAt)</h6>
-                <p class="card-text">Released: @(item.ReleaseDate.ToShortDateString())</p>
-                <p class="card-text">Genre: @(item.Genre)</p>
-                <p class="card-text">My Rating: @(item.Rating)/10</p>
-                <p class="card-text">Average Rating: @(item.UserRatings.Select(r => r.Rating).DefaultIfEmpty().Average())/10 (@item.UserRatings.Count())</p>
-                @if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdministratorRole")).Succeeded)
-                {
-                    <a asp-action="Edit" class="card-link" asp-route-id="@item.Id">Edit</a>
-                    <a asp-action="Delete" class="card-link" asp-route-id="@item.Id">Delete</a>
-                }
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <a asp-action="Rate" class="card-link" asp-route-id="@item.Id">Rate</a>
-                }
-            </div>
+    <div class="row row-cols-auto g-2 justify-content-center">
+        @foreach (var item in Model.Reverse())
+        {
+            <a class="flip-box" asp-action="Details" asp-route-id="@item.Id">
+                <div class="col flip-box-inner">
+                    <div class="flip-box-front">
+                        <img class="img-thumbnail" src="@(Url.Content("https://" + accountName + ".blob.core.windows.net/" + imageContainer + "/" + item.ImagePath))" />
+                        <span class="position-absolute top-0 start-0 badge bg-secondary m-2">
+                            <img src="~/images/tim.svg" />
+                            @item.Rating/10
+                        </span>
+                        <span class="position-absolute top-0 end-0 badge bg-secondary m-2">
+                            <i class="bi-people-fill"></i>
+                            @{
+                                var average = Convert.ToInt32(item.UserRatings.Select(r => r.Rating).DefaultIfEmpty().Average());
+                                if (average == 0)
+                                {
+                                    <span>-</span>
+                                } else
+                                {
+                                    <span>@average/10</span>
+                                }
+                            }
+                        </span>
+                    </div>
+                    <div class="flip-box-back">
+                        <h5>@(item.Artist) - @(item.Title)</h5>
+                    </div>
+                </div>
+            </a>
+        }
     </div>
-    }
 </div>

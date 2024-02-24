@@ -11,5 +11,6 @@ namespace _1001Albums.Models
         Funk,
         [Display(Name = "R&B")]
         RhythmAndBlues,
+        Folk,
     }
 }
