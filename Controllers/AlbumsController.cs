@@ -196,11 +196,8 @@ namespace _1001Albums.Controllers
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userRating = await _context.UserRating.FindAsync(id, userId);
-            if (userRating == null)
-            {
-                userRating = new UserRating { AlbumId = (int)id, UserId = userId, Rating = 0 };
-            }
+            var userRating = await _context.UserRating.Include(u => u.Album).FirstOrDefaultAsync(u => u.UserId == userId && u.AlbumId == id);
+            userRating ??= new UserRating { AlbumId = (int)id, UserId = userId, Rating = 0, Album = _context.Album.Find(id), };
             return View(userRating);
         }
 
@@ -245,7 +242,7 @@ namespace _1001Albums.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id });
             }
             return View(userRating);
         }
